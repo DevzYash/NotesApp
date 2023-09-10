@@ -1,6 +1,8 @@
 package com.yash.notesapp
 
+import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,4 +34,19 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
             userRepository.loginUser(userRequest)
         }
     }
+
+    fun validateCredentials(username:String,email:String,password:String,isLogin:Boolean):Pair<Boolean,String>{
+        var result = Pair(true,"")
+        if ((!isLogin&&TextUtils.isEmpty(username))|| TextUtils.isEmpty(password)|| TextUtils.isEmpty(email)){
+            result = Pair(false,"Please provide all credentials")
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            result = Pair(false,"Please provide valid email address")
+        }
+        else if(password.length<=5){
+            result  = Pair(false,"Password should be greater than 5")
+        }
+        return result
+    }
+
 }
