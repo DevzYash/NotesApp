@@ -1,4 +1,4 @@
-package com.yash.notesapp
+package com.yash.notesapp.viewmodel
 
 import android.text.TextUtils
 import android.util.Log

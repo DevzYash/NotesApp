@@ -1,6 +1,5 @@
 package com.yash.notesapp
 
-import android.R.layout
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.Gravity
@@ -14,11 +13,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.yash.notesapp.databinding.FragmentLoginBinding
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.utils.NetworkResult
 import com.yash.notesapp.utils.TokenManager
+import com.yash.notesapp.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

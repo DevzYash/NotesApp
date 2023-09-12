@@ -7,12 +7,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yash.notesapp.api.NotesApi
 import com.yash.notesapp.databinding.FragmentLoginBinding
 import com.yash.notesapp.databinding.FragmentMainBinding
 import com.yash.notesapp.utils.Constants
 import com.yash.notesapp.utils.Constants.TAG
+import com.yash.notesapp.utils.NetworkResult
+import com.yash.notesapp.viewmodel.NoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +30,7 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-
-    @Inject
-    lateinit var notesApi: NotesApi
+    private val noteViewModel by viewModels<NoteViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,10 +38,6 @@ class MainFragment : Fragment() {
     ): View? {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = notesApi.getNotes().body()
-            Log.d(TAG,response.toString())
-        }
 
         return binding.root
 
@@ -44,7 +45,24 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        noteViewModel.notesLiveData.observe(viewLifecycleOwner, Observer {
+            binding.progressBar.isVisible = false
+            when(it){
+                is NetworkResult.Success ->{
 
+                }
+                is NetworkResult.Error ->{
+                    MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle("Error Occurred")
+                        .setMessage(it.message)
+                        .setPositiveButton("GOT IT") { dialogInterface, i -> }
+                        .show()
+                }
+                is NetworkResult.Loading->{
+                    binding.progressBar.isVisible = true
+                }
+            }
+        })
     }
 
 

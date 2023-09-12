@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -18,6 +17,7 @@ import com.yash.notesapp.databinding.FragmentRegisterBinding
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.utils.NetworkResult
 import com.yash.notesapp.utils.TokenManager
+import com.yash.notesapp.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
