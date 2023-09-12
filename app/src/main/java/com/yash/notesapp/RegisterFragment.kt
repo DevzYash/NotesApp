@@ -17,7 +17,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.yash.notesapp.databinding.FragmentRegisterBinding
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.utils.NetworkResult
+import com.yash.notesapp.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -27,14 +29,18 @@ class RegisterFragment : Fragment() {
     private lateinit var mProgressDialog: ProgressDialog
     private var _binding : FragmentRegisterBinding? = null
     private val binding get() = _binding!!
+
     private val authViewModel by viewModels<AuthViewModel>()
+    @Inject
+    lateinit var tokenManager: TokenManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentRegisterBinding.inflate(inflater,container,false)
-        //mProgressDialog = ProgressDialog(requireActivity())
-
+        if (tokenManager.getToken() != null) {
+            findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
+        }
 
         return binding.root
     }
@@ -51,7 +57,7 @@ class RegisterFragment : Fragment() {
         })
 
         binding.signUpButton.setOnClickListener{
-            snackbar.show()
+            //snackbar.show()
             val validation_result = validateDetails()
             if (validation_result.first){
                 var email = binding.emailEditText.text.toString()
@@ -76,6 +82,7 @@ class RegisterFragment : Fragment() {
         authViewModel.userReponseLiveData.observe(viewLifecycleOwner, Observer {
             when(it){
                 is NetworkResult.Success ->{
+                    tokenManager.saveToken(it.data!!.token)
                     snackbar.dismiss()
                     findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
                 }

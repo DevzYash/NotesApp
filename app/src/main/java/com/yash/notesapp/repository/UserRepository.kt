@@ -1,16 +1,20 @@
 package com.yash.notesapp.repository
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yash.notesapp.api.UserApi
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.models.UserResponse
 import com.yash.notesapp.utils.Constants.TAG
 import com.yash.notesapp.utils.NetworkResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 class UserRepository @Inject constructor(private val userApi: UserApi) {
 
@@ -18,22 +22,21 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
     val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = _userResponseLiveData
 
+
     suspend fun registerUser(userRequest: UserRequest) {
-        handleResponse(userRequest)
-
-    }
-
-    private suspend fun handleResponse(userRequest: UserRequest) {
+        _userResponseLiveData.postValue(NetworkResult.Loading())
         try {
             val response = userApi.signup(userRequest)
             handleResponse(response)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
+
             Log.e(TAG, e.toString())
         }
     }
 
     private fun handleResponse(response: Response<UserResponse>) {
-        _userResponseLiveData.postValue(NetworkResult.Loading())
+
         if (response.isSuccessful && response.body() != null) {
             _userResponseLiveData.postValue(NetworkResult.Success(response.body()!!))
         } else if (response.errorBody() != null) {
@@ -47,9 +50,9 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
     }
 
     suspend fun loginUser(userRequest: UserRequest) {
+        _userResponseLiveData.postValue(NetworkResult.Loading())
         try {
             val response = userApi.signin(userRequest)
-
             handleResponse(response)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())

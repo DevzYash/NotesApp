@@ -18,16 +18,21 @@ import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.yash.notesapp.databinding.FragmentLoginBinding
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.utils.NetworkResult
+import com.yash.notesapp.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
+
     private lateinit var snackbar: Snackbar
     private lateinit var mProgressDialog: ProgressDialog
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private val authViewModel by viewModels<AuthViewModel>()
+    @Inject
+    lateinit var tokenManager: TokenManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,7 +61,7 @@ class LoginFragment : Fragment() {
 
 
         binding.signInButton.setOnClickListener {
-            snackbar.show()
+           // snackbar.show()
             val validation_result = validateDetails()
             if (validation_result.first) {
                 var email = binding.emailEditText.text.toString()
@@ -79,6 +84,7 @@ class LoginFragment : Fragment() {
         authViewModel.userReponseLiveData.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is NetworkResult.Success -> {
+                    tokenManager.saveToken(it.data!!.token)
                     snackbar.dismiss()
                     findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                 }
@@ -94,10 +100,6 @@ class LoginFragment : Fragment() {
 
                 is NetworkResult.Loading -> {
                     snackbar.show()
-//                    mProgressDialog.setCancelable(false)
-//                    mProgressDialog.setTitle("Loading")
-//                    mProgressDialog.setMessage("Please Wait while loading")
-//                    mProgressDialog.show()
                 }
             }
         })
