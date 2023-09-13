@@ -1,7 +1,6 @@
 package com.yash.notesapp.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,13 +8,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yash.notesapp.databinding.NoteItemBinding
 import com.yash.notesapp.models.NoteResponse
 
-class NotesAdapter() : ListAdapter<NoteResponse, NotesAdapter.NotesViewHolder>(DiffUtils()) {
+class NotesAdapter(private val onNoteClicked:(NoteResponse)->Unit) : ListAdapter<NoteResponse, NotesAdapter.NotesViewHolder>(DiffUtils()) {
+
+
     inner class NotesViewHolder(private val binding:NoteItemBinding)
         : RecyclerView.ViewHolder(binding.root)
     {
         fun bind(note:NoteResponse){
             binding.title.text =note.title
             binding.desc.text =note.description
+            binding.root.setOnClickListener {
+                onNoteClicked(note)
+            }
         }
 
     }

@@ -1,10 +1,12 @@
 package com.yash.notesapp.repository
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.yash.notesapp.api.NotesApi
 import com.yash.notesapp.models.NoteRequest
 import com.yash.notesapp.models.NoteResponse
 import com.yash.notesapp.utils.NetworkResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.yash.notesapp
+package com.yash.notesapp.fragments
 
 import android.app.ProgressDialog
 import android.os.Bundle
@@ -13,7 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.yash.notesapp.databinding.FragmentRegisterBinding
+import com.yash.notesapp.R
+import com.yash.notesapp.databinding.FragmentLoginBinding
 import com.yash.notesapp.models.UserRequest
 import com.yash.notesapp.utils.NetworkResult
 import com.yash.notesapp.utils.TokenManager
@@ -23,13 +24,12 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class RegisterFragment : Fragment() {
+class LoginFragment : Fragment() {
 
     private lateinit var snackbar: Snackbar
     private lateinit var mProgressDialog: ProgressDialog
-    private var _binding : FragmentRegisterBinding? = null
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-
     private val authViewModel by viewModels<AuthViewModel>()
     @Inject
     lateinit var tokenManager: TokenManager
@@ -37,14 +37,14 @@ class RegisterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentRegisterBinding.inflate(inflater,container,false)
-        if (tokenManager.getToken() != null) {
-            findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        mProgressDialog = ProgressDialog(requireActivity())
+        binding.signInButton.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
         }
 
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,16 +56,18 @@ class RegisterFragment : Fragment() {
             it.foregroundGravity = Gravity.CENTER_VERTICAL
         })
 
-        binding.signUpButton.setOnClickListener{
-            //snackbar.show()
+
+
+
+
+        binding.signInButton.setOnClickListener {
+           // snackbar.show()
             val validation_result = validateDetails()
-            if (validation_result.first){
+            if (validation_result.first) {
                 var email = binding.emailEditText.text.toString()
-                var username = binding.usernameEditText.text.toString()
                 var password = binding.passwordEditText.text.toString()
-                authViewModel.registerUser(UserRequest(email,password,username))
-            }
-            else{
+                authViewModel.loginUser(UserRequest(email, password, ""))
+            } else {
                 snackbar.dismiss()
                 MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("Something Wrong")
@@ -75,18 +77,19 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.signInTextView.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+        binding.signUpTextView.setOnClickListener {
+            findNavController().popBackStack()
         }
 
         authViewModel.userReponseLiveData.observe(viewLifecycleOwner, Observer {
-            when(it){
-                is NetworkResult.Success ->{
+            when (it) {
+                is NetworkResult.Success -> {
                     tokenManager.saveToken(it.data!!.token)
                     snackbar.dismiss()
-                    findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
+                    findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                 }
-                is NetworkResult.Error ->{
+
+                is NetworkResult.Error -> {
                     snackbar.dismiss()
                     MaterialAlertDialogBuilder(requireActivity())
                         .setTitle("Error Occurred")
@@ -94,8 +97,9 @@ class RegisterFragment : Fragment() {
                         .setPositiveButton("GOT IT") { dialogInterface, i -> }
                         .show()
                 }
-                is NetworkResult.Loading->{
-                   snackbar.show()
+
+                is NetworkResult.Loading -> {
+                    snackbar.show()
                 }
             }
         })
@@ -103,13 +107,16 @@ class RegisterFragment : Fragment() {
 
     private fun validateDetails(): Pair<Boolean, String> {
         var email = binding.emailEditText.text.toString()
-        var username = binding.usernameEditText.text.toString()
+        var username = ""
         var password = binding.passwordEditText.text.toString()
-        return authViewModel.validateCredentials(username,email,password,false)
+        return authViewModel.validateCredentials(username, email, password, true)
     }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 
 }

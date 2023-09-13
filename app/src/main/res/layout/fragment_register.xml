@@ -9,7 +9,7 @@
     android:background="?android:attr/windowBackground"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
-    tools:context=".RegisterFragment">
+    tools:context=".fragments.RegisterFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/titleTextView"
