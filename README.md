@@ -28,7 +28,7 @@ To get started with the Notes App, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/notesapp.git
+   git clone https://github.com/devzyash/notesapp.git
    
 open the project in your IDE.
 Build and run the app on your device.
